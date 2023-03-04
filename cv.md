@@ -17,7 +17,7 @@ I'm learning fast.
 * Python
 
 ## Code examples:
-a small program with which you can start the timer on the desktop image of the computer, for this you need to hold down the Ctrl + alt keys, then the timer time and enter:
+A small program with which you can start the timer on the desktop image of the computer, for this you need to hold down the Ctrl + alt keys, then the timer time and enter:
 ```python
 import ctypes
 import os
