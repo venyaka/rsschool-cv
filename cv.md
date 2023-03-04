@@ -3,7 +3,7 @@
 
 __Mobile-Phone:__ +7 771 535 3963
 
-__e-mail:__ [studying.is.the.key.to.a.dream@gmail.com](mailto:studying.is.the.key.to.a.dream@gmail.com)
+__e-mail:__ [elannushka912@gmail.com](mailto:elannushka912@gmail.com)
 
 ## About Me
 I have been programming for several years, I have a little experience of teamwork on a common project and also twice won a prize in a programming hackathon from the Step Academy.
