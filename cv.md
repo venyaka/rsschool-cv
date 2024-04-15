@@ -3,7 +3,7 @@
 
 __Mobile-Phone:__ +7 771 535 3963
 
-__e-mail:__ [elannushka912@gmail.com](mailto:elannushka912@gmail.com)
+__e-mail:__ [ilkovveniamin@gmail.com](mailto:ilkovveniamin@gmail.com)
 
 ## About Me
 I have been programming for several years, I have a little experience of teamwork on a common project and also twice won a prize in a programming hackathon from the Step Academy.
@@ -13,114 +13,107 @@ I'm learning fast.
 * HTML/CSS
 * Javascript
 * C/C++ for microcontrollers
-* С# for Unity
+* C++
+* Java
+* Spring
 * Python
 
 ## Code examples:
-A small program with which you can start the timer on the desktop image of the computer, for this you need to hold down the Ctrl + alt keys, then the timer time and enter:
-```python
-import ctypes
-import os
-from PIL import Image, ImageDraw, ImageFont
-import keyboard
-import time
-from screeninfo import get_monitors
-from wallpaperInfo import Wallpaper
+This is an excerpt from the online wallet user service , written by me using java and spring boot.
+```java
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public boolean signIn(String phone) {
+        PhoneValidator phoneValidator = new PhoneValidator();
+        if (phoneValidator.isValidPhoneNumber(phone)) {
+            User userFromDB = userRepository.findByPhone(phone);
+            User newuser = new User();
+
+            if (userFromDB == null) {
+                newuser.setPhone(phone);
+
+                SecureRandom random = new SecureRandom();
+                String randomCode = new BigInteger(12, random).toString(64);
+                newuser.setVerificationCode(randomCode);
+                newuser.setEnabled(false);
+                userRepository.save(newuser);
+
+                log.info("confirmation code: {}", randomCode);
+                return true;
+            }
+            else {
+                log.info("User with this phone-number: {} exist", phone);
+            }
+        }
+        else {
+            log.info("Uncorrected phone number: {}", phone);
+        }
+        return false;
+    }
+
+    public boolean confirmSignIn(PhoneCodeDto dto) {
+        String code = dto.getCode();
+        String phone = dto.getPhone();
+
+        User confirmationUser = userRepository.findByPhone(phone);
+
+        if (Objects.equals(code, confirmationUser.getVerificationCode()) && Objects.equals(phone, confirmationUser.getPhone())) {
+            log.info("successful confirmation");
+            confirmationUser.setEnabled(true);
+            userRepository.save(confirmationUser);
+
+            return true;
+        }
+        log.info("unsuccessful confirmation");
+        return false;
+    }
 
 
-class mainTimer():
-    imagePath = 'images/wallpaper2.png'
-    fontSize = 80                                                   # размер текста на экране
-    textFont = ImageFont.truetype("arial.ttf", fontSize)
-    fontName = "Montserrat-Black"
+    public boolean login(PhoneDto dto) {
 
-    def start(textFont, fontSize, fontName):                        # создает папки images и font при их отсутствии перед выполнением программы
-        print('start')
-        if (os.path.exists('images') == False):
-            print('create folder image')
-            os.mkdir("images")
-
-        if (os.path.exists('fonts') == False):
-            os.mkdir("fonts")
-            print('create folder fonts')
-
-        if (os.path.isfile('fonts/' + fontName + '.ttf')):
-            mainTimer.textFont = ImageFont.truetype('fonts/' + fontName + '.ttf', fontSize)
-
-        Wallpaper.copy("images/", "wallpaper.png")                  # копирует изображение рабочего стола c названием "wallpaper.jpg" в папку проекта
-
-    def getTime():                                                  # возвращает числа записанные после нажатия залипания клавиш "Ctrl + alt" 
-        keys = keyboard.record(until='enter')
-        print(keys)
-        firstKey = ""
-        secondKey = ""
-
-        for i in range(0, len(keys) - 1, 1):
-            if keys[i].event_type == "down" and keys[i].name.isdigit():
-                firstKey = keys[i].name
-                break
-        for i in range(len(keys) - 1, 0, -1):
-            if keys[i].event_type == "down" and keys[i].name.isdigit():
-                secondKey = keys[i].name
-                break
-        if ((str(firstKey) + str(secondKey)).isdigit()):
-            return str(firstKey) + str(secondKey)
-        return '0'
+        String phone = dto.getPhone();
+        return userRepository.existsByPhone(phone) && userRepository.findByPhone(phone).isEnabled();
+    }
 
 
-def main():
-    # параметры экрана:
-    backgroundWidth = get_monitors()[0].width
-    backgroundHeight = get_monitors()[0].height
-    
-    white = (255, 255, 255)
-    imagePath = mainTimer.imagePath
 
-    mainTimer.start(mainTimer.textFont, mainTimer.fontSize, mainTimer.fontName)
 
-    setTimer = True
+    public List<User> allUsers() {
+        return userRepository.findAll();
+    }
 
-    while setTimer:
-        if keyboard.is_pressed("ctrl + alt"):
-            timerTime = mainTimer.getTime()
-            
-            stopTimer = False
-            timerMin = int(timerTime)
-            Time = 0
-            step = 0.1
+    public User saveUser(User user) {
+        User userFromDB = userRepository.findByPhone(user.getPhone());
 
-            image = Image.open('images/wallpaper.png')
-            image = image.convert(mode='RGBA')
-            image = image.resize((backgroundWidth, backgroundHeight))
+        if (userFromDB == null) {
+            return userRepository.save(user);
+        }
+//        userRepository.save(user);
+        return user;
+    }
 
-            while stopTimer == False:
-                if timerMin >= 0:
-                    if time.time() > Time:
-                        alphaImage = Image.new(mode = "RGBA", size = (backgroundWidth, backgroundHeight), color = (255, 255, 255, 0))
-                        editedImage = ImageDraw.Draw(alphaImage)
+    public boolean deleteUser(Long userId) {
+        if (userRepository.findById(userId).isPresent()) {
+            userRepository.deleteById(userId);
+            return true;
+        }
+        return false;
+    }
 
-                        editedImage.text((backgroundWidth - mainTimer.fontSize * 2, backgroundHeight / 100), str(timerMin), font = mainTimer.textFont, fill = white)
-                        alphaImage.save(imagePath)
-                        alphaImage = Image.alpha_composite(image, alphaImage)
-                        alphaImage.save(imagePath) 
-
-                        ctypes.windll.user32.SystemParametersInfoA(20, 0, os.path.abspath('images/wallpaper2.png').encode(), 0)
-                        Time = time.time() + step
-                        timerMin = timerMin - 1
-                else:
-                    stopTimer = True
-                    ctypes.windll.user32.SystemParametersInfoA(20, 0, os.path.abspath('images/wallpaper.png').encode(), 0)
-                    keyboard.send("win + d")
-
-                if keyboard.is_pressed("ctrl + break"):
-                    timerMin = 0
-                    stopTimer = True
-                    ctypes.windll.user32.SystemParametersInfoA(20, 0, os.path.abspath('images/wallpaper.png').encode(), 0)
-                    break
-main()
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+}
 ```
 
 ## Experience:
+* A simple example of an online walletю
 * telegram bot for playing the game "words", and communicating with him.
 * Arduino projects:
   * remote control of the computer via the remote control (mouse, keyboard, media) via a microcontroller connected via Usb
