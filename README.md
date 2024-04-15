@@ -1,1 +1,1 @@
-https://Veniamin-Noise.github.io/rsschool-cv/
+https://venyaka.github.io/rsschool-cv/
