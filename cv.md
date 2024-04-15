@@ -17,6 +17,7 @@ I'm learning fast.
 * Java
 * Spring
 * Python
+* Git
 
 ## Code examples:
 This is an excerpt from the online wallet user service , written by me using java and spring boot.
@@ -76,13 +77,9 @@ public class UserService {
 
 
     public boolean login(PhoneDto dto) {
-
         String phone = dto.getPhone();
         return userRepository.existsByPhone(phone) && userRepository.findByPhone(phone).isEnabled();
     }
-
-
-
 
     public List<User> allUsers() {
         return userRepository.findAll();
@@ -91,10 +88,8 @@ public class UserService {
     public User saveUser(User user) {
         User userFromDB = userRepository.findByPhone(user.getPhone());
 
-        if (userFromDB == null) {
+        if (userFromDB == null)
             return userRepository.save(user);
-        }
-//        userRepository.save(user);
         return user;
     }
 
